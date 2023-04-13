@@ -33,6 +33,7 @@ const upload = multer({
 exports.uploadUserPhoto = upload.single('photo');
 
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+  console.log('inside resizeuserphoto', req.body);
   if (!req.file) return next();
 
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
@@ -60,6 +61,7 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
+  console.log('inside updateMe', req.body);
   // 1) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
     return next(
@@ -72,8 +74,13 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
-  if (req.file) filteredBody.photo = req.file.filename;
-
+  console.log(req.body.photo_name);
+  if (req.file) {
+    filteredBody.photo = req.file.filename;
+  } else {
+    filteredBody.photo = req.body.photo_name;
+  }
+  console.log('filteredBody', filteredBody);
   // 3) Update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,

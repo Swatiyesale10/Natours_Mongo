@@ -136,6 +136,12 @@ tourSchema.virtual('reviews', {
   localField: '_id',
 });
 
+tourSchema.virtual('comments', {
+  ref: 'Comment',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
